@@ -1,19 +1,20 @@
 package by.vitikova.queue.impl;
 
+import by.vitikova.exception.EmptyQueueException;
+import by.vitikova.exception.InvalidInitialCapacityException;
 import by.vitikova.queue.Queue;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.NoSuchElementException;
 
 import static by.vitikova.constant.Constant.*;
 
 /**
- * Класс PriorityQueueImpl реализует приоритетную очередь на основе массива.
+ * Класс PriorityQueue реализует приоритетную очередь на основе массива.
  *
  * @param <E> тип хранимых в очереди элементов.
  */
-public class PriorityQueueImpl<E> implements Queue<E> {
+public class PriorityQueue<E> implements Queue<E> {
 
     /**
      * Начальная ёмкость по умолчанию.
@@ -39,7 +40,7 @@ public class PriorityQueueImpl<E> implements Queue<E> {
     /**
      * Конструктор по умолчанию создаёт приоритетную очередь с начальной ёмкостью 8.
      */
-    public PriorityQueueImpl() {
+    public PriorityQueue() {
         this(DEFAULT_INITIAL_CAPACITY, null);
     }
 
@@ -50,8 +51,23 @@ public class PriorityQueueImpl<E> implements Queue<E> {
      * @param initialCapacity начальная ёмкость очереди.
      * @throws IllegalArgumentException если начальная ёмкость меньше 1.
      */
-    public PriorityQueueImpl(int initialCapacity) {
+    public PriorityQueue(int initialCapacity) {
         this(initialCapacity, null);
+    }
+
+    /**
+     * Создаёт новый экземпляр приоритетной очереди с заданным компаратором.
+     *
+     * <p>Приоритетная очередь будет использовать предоставленный компаратор для определения порядка
+     * элементов в очереди. Если компаратор равен {@code null}, то будет использоваться естественный порядок
+     * элементов, предполагающий, что элементы реализуют интерфейс {@link Comparable}.</p>
+     *
+     * @param comparator компаратор, используемый для определения порядка элементов в очереди.
+     *                   Если равен {@code null}, используется естественный порядок элементов.
+     * @throws InvalidInitialCapacityException если компаратор равен {@code null} и элементы не реализуют {@link Comparable}.
+     */
+    public PriorityQueue(Comparator<? super E> comparator) {
+        this(DEFAULT_INITIAL_CAPACITY, comparator);
     }
 
     /**
@@ -60,12 +76,12 @@ public class PriorityQueueImpl<E> implements Queue<E> {
      *
      * @param initialCapacity начальная ёмкость очереди.
      * @param comparator      компаратор для конфигурации порядка элементов.
-     * @throws IllegalArgumentException если начальная ёмкость меньше 1.
+     * @throws InvalidInitialCapacityException если начальная ёмкость меньше 1.
      */
     @SuppressWarnings("unchecked")
-    public PriorityQueueImpl(int initialCapacity, Comparator<? super E> comparator) {
+    public PriorityQueue(int initialCapacity, Comparator<? super E> comparator) {
         if (initialCapacity < 1) {
-            throw new IllegalArgumentException(NULL_ELEMENT_ERROR_MESSAGE);
+            throw new InvalidInitialCapacityException(NULL_ELEMENT_ERROR_MESSAGE);
         }
         queue = (E[]) new Object[initialCapacity];
         this.comparator = comparator;
@@ -78,7 +94,6 @@ public class PriorityQueueImpl<E> implements Queue<E> {
      * При добавлении элемента порядок приоритетов восстанавливается.
      *
      * @param element элемент для добавления в очередь.
-     * @throws IllegalArgumentException если элемент равен null.
      */
     @Override
     public void add(E element) {
@@ -92,7 +107,7 @@ public class PriorityQueueImpl<E> implements Queue<E> {
      * Возвращает элемент с наивысшим приоритетом без его удаления из очереди.
      *
      * @return элемент с наивысшим приоритетом.
-     * @throws NoSuchElementException если очередь пуста.
+     * @throws EmptyQueueException если очередь пуста.
      */
     @Override
     public E peek() {
@@ -104,7 +119,7 @@ public class PriorityQueueImpl<E> implements Queue<E> {
      * Возвращает и удаляет элемент с наивысшим приоритетом из очереди.
      *
      * @return элемент с наивысшим приоритетом.
-     * @throws NoSuchElementException если очередь пуста.
+     * @throws EmptyQueueException если очередь пуста.
      */
     @Override
     public E poll() {
@@ -197,11 +212,11 @@ public class PriorityQueueImpl<E> implements Queue<E> {
     /**
      * Проверяет, пуста ли очередь.
      *
-     * @throws NoSuchElementException если очередь пуста.
+     * @throws EmptyQueueException если очередь пуста.
      */
     private void validateNotEmpty() {
         if (size == 0) {
-            throw new NoSuchElementException(EMPTY_QUEUE_ERROR_MESSAGE);
+            throw new EmptyQueueException(EMPTY_QUEUE_ERROR_MESSAGE);
         }
     }
 }
