@@ -1,1 +1,1 @@
-# custom-prioprity-queue
+# custom-priority-queue
