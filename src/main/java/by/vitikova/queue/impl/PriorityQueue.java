@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import static by.vitikova.constant.Constant.*;
+import static by.vitikova.util.MathUtil.calculateChildIndexFromParentIndex;
+import static by.vitikova.util.MathUtil.calculateParentIndexFromChildIndex;
 
 /**
  * Класс PriorityQueue реализует приоритетную очередь на основе массива.
@@ -134,34 +136,34 @@ public class PriorityQueue<E> implements Queue<E> {
     /**
      * Восстанавливает порядок приоритетов, поднимая элемент вверх.
      *
-     * @param i индекс элемента, который поднимается.
+     * @param index индекс элемента, который поднимается.
      */
-    private void siftUp(int i) {
-        while (i > 0 && compare(i, (i - 1) / 2) < 0) {
-            swap(i, (i - 1) / 2);
-            i = (i - 1) / 2;
+    private void siftUp(int index) {
+        while (index > 0 && compare(index, calculateParentIndexFromChildIndex(index)) < 0) {
+            swap(index, calculateParentIndexFromChildIndex(index));
+            index = calculateParentIndexFromChildIndex(index);
         }
     }
 
     /**
      * Восстанавливает порядок приоритетов, опуская элемент вниз.
      *
-     * @param i индекс элемента, который опускается.
+     * @param index индекс элемента, который опускается.
      */
-    private void siftDown(int i) {
+    private void siftDown(int index) {
         int heapSize = size;
-        while (2 * i + 1 < heapSize) {
-            int left = 2 * i + 1;
-            int right = 2 * i + 2;
-            int j = left;
+        while (calculateChildIndexFromParentIndex(index, 1) < heapSize) {
+            int left = calculateChildIndexFromParentIndex(index, 1);
+            int right = calculateChildIndexFromParentIndex(index, 2);
+            int border = left;
             if (right < heapSize && compare(right, left) < 0) {
-                j = right;
+                border = right;
             }
-            if (compare(i, j) <= 0) {
+            if (compare(index, border) <= 0) {
                 break;
             }
-            swap(i, j);
-            i = j;
+            swap(index, border);
+            index = border;
         }
     }
 
